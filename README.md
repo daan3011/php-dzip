@@ -47,7 +47,7 @@ More configuration options will be added in a future update
 
 ## How it works
 
-Dzip's compression works by looping over the files contents and checking if the current word is present in an array, if so the word gets replaced with the index of the word followed by an s. Otherwise it will add the word to duplicates and searches for the index of the word and also replaces iself with the index
+Dzip's compression works by looping over the files contents and checking if the current word is present in an array, if so the word gets replaced with the index of the word followed by an s. Otherwise it will add the word to duplicates and searches for the index of the word and also replaces itself with the index
 
 ## Commands
 
@@ -75,9 +75,23 @@ It is possible to build a PHAR archive of dzip and run this as a standalone appl
 php dzip-cli build:app
 ```
 
-Then it wil prompt you for a version number, current version is 0.1.0 after this the standalone version will be built 
+Then it wil prompt you for a version number, current version is 0.1.0 after this the standalone version will be built. the latest prebuilt version can also be found in the builds folder
 
 ## Usage
+
+### Standalone version
+
+The standalone version of dzip-cli can be found inside the builds folder, the current version is 0.1.0
+
+### Non standalone version
+
+The non standalone version of the app is what you get after cloning the repository and installing all of the projects depenendencies
+
+### differences
+
+The standalone version is a .PHAR archive and doesn't provide the option to create custom commands and possibly extend the tool to fit your needs. On Linux and MacOSX this file can be run by navigating into the builds folder (or where ever the standalone version is located on the system) and just calling dzip-cli
+
+### command usage
 
 To compress a file run
 

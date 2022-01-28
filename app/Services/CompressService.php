@@ -8,54 +8,53 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class CompressService extends Command
 {
-    public function compress($inFile)
+
+    private $key = 1;
+    private $duplicates = 0;
+
+    private function removeFileExtention($inFile)
     {
-        $compressedWords = [];
-        $key = 1;
-        $duplicates = 0;
-        $withoutExtension = pathinfo($inFile, PATHINFO_FILENAME);
+        return pathinfo($inFile, PATHINFO_FILENAME);
+    }
 
-        // load file contents into string
-        $fileString = file_get_contents($inFile);
+    private function loadFileIntoString($inFile)
+    {
+        return file_get_contents($inFile);
+    }
 
-        // replace all newlines with "n "
+    private function prepareFile($fileString)
+    {
         $fileString = preg_replace("/[\n]/", "n ", $fileString);
+        return preg_split('/[\s]+/', $fileString);
+    }
 
-        // split string into array on spaces and tabs
-        $wordsArray = preg_split('/[\s]+/', $fileString);
-
-        // loop checking if a word is already present in the compressedWords array and otherwise adds it
-        // if the word is already present 1 gets added to duplicates
+    private function createWordsArray($wordsArray, $compressedWords)
+    {
         foreach ($wordsArray as $word) {
             if (!in_array($word, $compressedWords)) {
-                global $compressedWords;
-                $compressedWords[$key] = $word;
-                $key++;
+                $compressedWords[$this->key] = $word;
+                $this->key++;
             } else {
-                $duplicates += 1;
+                $this->duplicates += 1;
             }
         }
+        return $compressedWords;
+    }
 
-        //generates decompression keyfile and writes the serialized version of the compressedWords array to it
+    private function createDecompressionKey($withoutExtension, $compressedWords)
+    {
         file_put_contents($withoutExtension . "_decompress_key.ddc", serialize($compressedWords));
+    }
 
-        // load file contents into string
-        $fileString = file_get_contents($inFile);
-
-        // replace all newlines with "n "
-        $fileString = preg_replace("/[\n]/", "n ", $fileString);
-
-        // split string into array on spaces and tabs
-        $compareArray = preg_split('/[\s]+/', $fileString);
-
-        // creating cli progressbar
+    private function createProgressBar() {
         $output = new ConsoleOutput();
         $progressBar = new ProgressBar($output);
         $progressBar->setBarCharacter('<fg=green>•</>');
+        return $progressBar;
+    }
 
-        // loop checking if the current word is in the compressed word array, if so it returns its corresponding key
-        foreach ($progressBar->iterate($compareArray) as $compareWord) {
-            // returns the key
+    private function buildCompressedFile($progressBar, $wordsArray, $compressedWords, $withoutExtension) {
+        foreach ($progressBar->iterate($wordsArray) as $compareWord) {
             $search = array_search($compareWord, $compressedWords);
             if ($search) {
                 //if the current word equals "n" append "n" to compressed file
@@ -67,6 +66,26 @@ class CompressService extends Command
                 }
             }
         }
-        echo "Removed $duplicates duplicates" . PHP_EOL;
+    }
+
+    public function compress($inFile)
+    {
+        $compressedWords = [];
+
+        $withoutExtension = $this->removeFileExtention($inFile);
+
+        $fileString = $this->loadFileIntoString($inFile);
+
+        $wordsArray = $this->prepareFile($fileString);
+
+        $compressedWords = $this->createWordsArray($wordsArray, $compressedWords);
+
+        $this->createDecompressionKey($withoutExtension, $compressedWords);
+
+        $progressBar = $this->createProgressBar();
+
+        $this->buildCompressedFile($progressBar, $wordsArray, $compressedWords, $withoutExtension);
+        
+        echo "Removed $this->duplicates duplicates" . PHP_EOL;
     }
 }

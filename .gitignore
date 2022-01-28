@@ -3,3 +3,7 @@
 /.vscode
 /.vagrant
 .phpunit.result.cache
+/test.txt
+/test2.txt
+/app/Services/RefactorCompressService.php
+/itterate.php
