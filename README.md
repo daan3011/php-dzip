@@ -1,36 +1,92 @@
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" />
-</p>
+<div align="center">
+  <img style="width:500px" src="https://i.imgur.com/I6T4czC.pngta.png" alt="Dzip logo" />
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://img.shields.io/github/workflow/status/laravel-zero/framework/Tests.svg" alt="Build Status"></img></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License"></a>
-</p>
+<hr/>
 
-<h4> <center>This is a <bold>community project</bold> and not an official Laravel one </center></h4>
 
-Laravel Zero was created by, and is maintained by [Nuno Maduro](https://github.com/nunomaduro), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
+</div>
 
-------
+**Requires PHP 8.0+**
 
-## Documentation
+My first version of a simple compression algortihm, Dzip is completely written in vanilla php.
+it uses Laravel zero to create the cli but the compress and decompress file are also usable on their own.
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+I wrote this because I was doing some research into compression algorithms and someone on Stackoverflow said it wasn't possible to write one in php (I will link the post when I find it).
 
-## Support the development
-**Do you like this project? Support it by donating**
+Don't use for compressing important files as the algorithm hasn't been properly tested with the majority of file types, I wrote this purely to prove that it is indeed possible to do in php
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
 
-## License
+# Contents
 
-Laravel Zero is an open-source software licensed under the MIT license.
+- [Functionalities](#functionalities)
+- [Output formats](#output-formats)
+- [How it works](#how-it-works)
+- [Commands](#commands)
+- [Installation](#installation)
+- [Creating standalone application](#creating-standalone-application)
+- [Usage](#usage)
+
+
+## Functionalities
+
+More configuration options will be added in a future update
+
+- Display currently installed version of Dzip and php
+- Compress files
+- Decompress files
+- self update (Comming soon)
+
+
+## Output formats
+
+- .dip (compressed file)
+- .dcc (decompression key)
+
+
+
+## How it works
+
+Dzip's compression works by looping over the files contents and checking if the current word is present in an array, if so the word gets replaced with the index of the word followed by an s. Otherwise it will add the word to duplicates and searches for the index of the word and also replaces iself with the index
+
+## Commands
+
+More configuration options will be added in a future update
+
+- Display currently installed version of Dzip and php
+- Compress files
+- Decompress files
+- selfUpdate (Comming soon)
+
+## Installation
+
+
+#### Install necessary Composer dependencies
+
+```bash
+composer install
+```
+
+## Creating standalone application
+
+It is possible to build a PHAR archive of dzip and run this as a standalone application (not for windows). the standalone version can be built by doing:
+
+```php
+php dzip-cli build:app
+```
+
+Then it wil prompt you for a version number, current version is 0.1.0 after this the standalone version will be built 
+
+## Usage
+
+To compress a file run
+
+```bash
+php dzip-cli compress [path/filename]
+```
+
+To decompress a file run
+
+```bash
+php dzip-cli decompress [path/filename] [decompression_key] [extension]
+```
