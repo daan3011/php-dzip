@@ -8,60 +8,70 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 class DecompressService
 {
 
-    protected $fileExtension = "";
-    protected $decompressKey = "";
-
-    public function setFileExtension($extension)
+    private function setFileExtension($extension)
     {
-        $this->fileExtension = $extension;
+        return "." . $extension;
     }
 
-    public function decompressKey($decompressKey)
+    private function setDecompressKey($decompressKey)
     {
-        $this->decompressKey = $decompressKey;
+        return unserialize(file_get_contents($decompressKey));
     }
 
-    public function decompress($inFile)
+    private function loadFileIntoString($inFile)
     {
-        $withoutExtension = pathinfo($inFile, PATHINFO_FILENAME);
+        return file_get_contents($inFile);
+    }
 
-        // load compressed file into string
-        $fileString = file_get_contents($inFile);
-
-        // unserialize decompression keyfile to get the array with indexed words
-        $deCompressedCompareArray = unserialize(file_get_contents($this->decompressKey));
-
-        // relace all s's in the compressed file with spaces
+    private function setSpaces($fileString) {
         $fileString = preg_replace("/[s]/", " ", $fileString);
+        return $fileString;
+    }
 
-        // expode string on the spaces to get an array of array keys for decompression
-        $wordsArray = explode(' ', $fileString);
+    private function explodeFileString($fileString) {
+        return explode(' ', $fileString);
+    }
 
-        // some words have a n in fron of them to delimit a newline, this loop checks for that with str_starts_with (php 8.x required)
+    private function prepareFile($wordsArray, $fileString)
+    {
         foreach ($wordsArray as $word) {
             if (str_starts_with($word, 'n')) {
                 // replaces the n's with d's otherwise it will keep on replacing and adds four newlines instead of one
                 $fileString = preg_replace("/[n]/", "d ", $fileString);
             }
         }
+        return $fileString;
+    }
 
-        // creates array of numbers (array keys)
-        $wordsArray = explode(' ', $fileString);
-
-        // creating cli progressbar
+    private function createProgressBar() {
         $output = new ConsoleOutput();
         $progressBar = new ProgressBar($output);
         $progressBar->setBarCharacter('<fg=green>•</>');
+        return $progressBar;
+    }
 
+    private function buildDecompressedFile($progressBar, $wordsArray, $deCompressedCompareArray, $withoutExtension, $extension) {
         foreach ($progressBar->iterate($wordsArray) as $word) {
             // in case of n (newline) the intval returns 0 
             if (intval($word) != 0) {
-                // append word to file, including space
-                file_put_contents($withoutExtension . '_decompressed.' . $this->fileExtension, $deCompressedCompareArray[$word] . " ", FILE_APPEND);
+                file_put_contents($withoutExtension . '_decompressed' . $extension, $deCompressedCompareArray[$word] . " ", FILE_APPEND);
             } else {
-                // in case of n (newline) the intval returns 0, and a "\n" is appended
-                file_put_contents($withoutExtension . '_decompressed.' . $this->fileExtension, "\n", FILE_APPEND);
+                file_put_contents($withoutExtension . '_decompressed' . $extension, "\n", FILE_APPEND);
             }
         }
+    }
+
+    public function decompress($inFile, $decompressKey, $extension)
+    {
+        $withoutExtension = pathinfo($inFile, PATHINFO_FILENAME);
+        $fileString = $this->loadFileIntoString($inFile);
+        $deCompressedCompareArray = $this->setDecompressKey($decompressKey);
+        $fileString = $this->setSpaces($fileString);
+        $wordsArray = $this->explodeFileString($fileString);
+        $fileString = $this->prepareFile($wordsArray, $fileString);
+        $wordsArray = $this->explodeFileString($fileString);
+        $progressBar = $this->createProgressBar();
+        $extension = $this->setFileExtension($extension);
+        $this->buildDecompressedFile($progressBar, $wordsArray, $deCompressedCompareArray, $withoutExtension, $extension);
     }
 }

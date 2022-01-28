@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class CompressService extends Command
+class CompressService
 {
 
     private $key = 1;
@@ -73,19 +73,12 @@ class CompressService extends Command
         $compressedWords = [];
 
         $withoutExtension = $this->removeFileExtention($inFile);
-
         $fileString = $this->loadFileIntoString($inFile);
-
         $wordsArray = $this->prepareFile($fileString);
-
         $compressedWords = $this->createWordsArray($wordsArray, $compressedWords);
-
         $this->createDecompressionKey($withoutExtension, $compressedWords);
-
         $progressBar = $this->createProgressBar();
-
         $this->buildCompressedFile($progressBar, $wordsArray, $compressedWords, $withoutExtension);
-        
         echo "Removed $this->duplicates duplicates" . PHP_EOL;
     }
 }
