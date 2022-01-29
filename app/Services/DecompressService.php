@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
+use App\Services\BaseService;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class DecompressService
+class DecompressService extends BaseService
 {
 
     private function setFileExtension($extension)
@@ -16,11 +17,6 @@ class DecompressService
     private function setDecompressKey($decompressKey)
     {
         return unserialize(file_get_contents($decompressKey));
-    }
-
-    private function loadFileIntoString($inFile)
-    {
-        return file_get_contents($inFile);
     }
 
     private function setSpaces($fileString) {

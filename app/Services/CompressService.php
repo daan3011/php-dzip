@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use App\Services\BaseService;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class CompressService
+class CompressService extends BaseService
 {
 
     private $key = 1;
@@ -17,19 +18,15 @@ class CompressService
         return pathinfo($inFile, PATHINFO_FILENAME);
     }
 
-    private function loadFileIntoString($inFile)
-    {
-        return file_get_contents($inFile);
-    }
-
     private function prepareFile($fileString)
     {
         $fileString = preg_replace("/[\n]/", "n ", $fileString);
-        return preg_split('/[\s]+/', $fileString);
+        return preg_split("/[\s]+/", $fileString);
     }
 
-    private function createWordsArray($wordsArray, $compressedWords)
+    private function createWordsArray($wordsArray)
     {
+        $compressedWords = [];
         foreach ($wordsArray as $word) {
             if (!in_array($word, $compressedWords)) {
                 $compressedWords[$this->key] = $word;
@@ -70,12 +67,10 @@ class CompressService
 
     public function compress($inFile)
     {
-        $compressedWords = [];
-
         $withoutExtension = $this->removeFileExtention($inFile);
         $fileString = $this->loadFileIntoString($inFile);
         $wordsArray = $this->prepareFile($fileString);
-        $compressedWords = $this->createWordsArray($wordsArray, $compressedWords);
+        $compressedWords = $this->createWordsArray($wordsArray);
         $this->createDecompressionKey($withoutExtension, $compressedWords);
         $progressBar = $this->createProgressBar();
         $this->buildCompressedFile($progressBar, $wordsArray, $compressedWords, $withoutExtension);

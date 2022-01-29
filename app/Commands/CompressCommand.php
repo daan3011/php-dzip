@@ -7,6 +7,7 @@ use LaravelZero\Framework\Commands\Command;
 use App\Services\CompressService;
 use SebastianBergmann\CodeCoverage\Report\PHP;
 
+
 class CompressCommand extends Command
 {
     /**

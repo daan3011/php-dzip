@@ -31,13 +31,10 @@ class DecompressCommand extends Command
      */
     public function handle(DecompressService $decompress)
     {
-        //
-        //$decompress->setFileExtension($this->argument('extension'));
-        //$decompress->decompressKey($this->argument('decompression-key'));
         $this->info("Found: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME) . "_decompress_key.ddc");
         $this->info("Found: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME)  . ".dzip");
         $decompress->decompress($this->argument('input-file'), $this->argument('decompression-key'), $this->argument('extension'));
-        $this->info(PHP_EOL . "Succesfully decompressed: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME)  . ".dzip" . " into: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME) . "." . $this->argument('extension'));
+        $this->info(PHP_EOL . "Succesfully decompressed: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME)  . ".dzip" . " into: " . pathinfo($this->argument('input-file'), PATHINFO_FILENAME) . "_decompressed" . "." . $this->argument('extension'));
     }
 
     /**
